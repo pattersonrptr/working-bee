@@ -25,7 +25,15 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
 - **The Grep tool with no `path` searches the whole project** (2026-11-24). `guard_files` only sees the path
   argument. ripgrep skips git-ignored files by default, so keep `.env` in `.gitignore`.
 
+- **A formatter in PostToolUse does not break Claude's next Edit** (verified 2026-11-24). Claude Code notices the
+  file changed after the edit and tells Claude so ("likely a formatter... Read the file first" if the next
+  `old_string` targets a reformatted region). No workaround needed.
+
 ## Plugins and marketplaces
+
+- **An installed plugin cannot reach another plugin's files** (2026-11-24). `${CLAUDE_PLUGIN_ROOT}` is per plugin,
+  in its own cache folder, so a dependency's `run.sh` is out of reach. Each plugin with hooks ships a copy of
+  core's launcher; `tests/test_manifests.py` fails if a copy drifts.
 
 - **`hooks/hooks.json` must wrap the events in a top-level `"hooks"` key** (docs, 2026-11-24); an inline `hooks`
   object in `plugin.json` must not. `tests/test_manifests.py` checks the file.

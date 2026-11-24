@@ -48,6 +48,9 @@ or irreversible (a push to `main`, a leaked `.env`), make it a hook.
   "ask", "permissionDecisionReason": "..."}}`. Decisions combine as deny > defer > ask > allow.
 - **SessionStart** stdout becomes context for the session. **PreCompact** stdout becomes instructions for the
   compaction summary.
+- **PostToolUse** ([python-backend](../plugins/python-backend/)) runs after the tool, so it cannot stop it.
+  `{"decision": "block", "reason": "..."}` puts the reason next to the tool result, for Claude to act on (lint
+  errors left after a formatter); `hookSpecificOutput.additionalContext` adds a note; exit 2 shows stderr.
 - `matcher` is a regex on the tool name (`Bash|PowerShell`, `Edit|Write`).
 - Plugin hooks get `CLAUDE_PLUGIN_ROOT` (the installed plugin, changes on update), `CLAUDE_PLUGIN_DATA`
   (persistent storage), `CLAUDE_PROJECT_DIR` and `CLAUDE_PLUGIN_OPTION_<KEY>` in their environment.
@@ -78,6 +81,8 @@ or irreversible (a push to `main`, a leaked `.env`), make it a hook.
 - `claude plugin validate <path> --strict` checks manifests, skills, agents and hooks; `claude plugin details`
   shows the token cost of a plugin; `claude plugin eval` runs eval suites with and without the plugin.
 - A local-path marketplace reads the folder directly: edits apply on the next session or `/reload-plugins`.
+- `claude --plugin-dir plugins/<name> -p "..."` loads one plugin for a single run: the quickest end-to-end test of
+  a hook against a real Claude Code.
 
 ## Orchestration (planned: phases 4 and 5)
 

@@ -64,6 +64,13 @@ def test_skills_have_frontmatter(entry):
         assert re.search(r"^description: .*Use when", front, re.M), f"{skill}: description needs 'Use when'"
 
 
+def test_every_launcher_is_a_copy_of_cores():
+    # a plugin cannot reach another plugin's files once installed, so each one ships its own run.sh
+    core = (ROOT / "plugins" / "core" / "hooks" / "run.sh").read_bytes()
+    for launcher in ROOT.glob("plugins/*/hooks/run.sh"):
+        assert launcher.read_bytes() == core, f"{launcher} differs from core's run.sh: copy it again"
+
+
 def test_shell_scripts_use_lf():
     for script in ROOT.glob("plugins/*/hooks/*.sh"):
         assert b"\r\n" not in script.read_bytes(), f"{script} has CRLF line endings"

@@ -16,6 +16,11 @@
       "name": "memory",
       "source": "./plugins/memory",
       "description": "Project memory that improves with use: /learn turns a mistake into a rule, /gotcha records a surprise, /agents-md keeps AGENTS.md accurate."
+    },
+    {
+      "name": "python-backend",
+      "source": "./plugins/python-backend",
+      "description": "The Python hat: ruff fixes and formats every Python file Claude edits; /test runs pytest with the project's own runner."
     }
   ]
 }
