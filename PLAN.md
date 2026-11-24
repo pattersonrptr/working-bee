@@ -3,7 +3,7 @@
 > **working bee** (inglês da Austrália e do Reino Unido) é um mutirão: gente que se junta para fazer, de graça, um
 > trabalho que ninguém faria sozinho. Aqui, os vizinhos são agentes, e o celeiro é o seu projeto.
 
-Documento vivo. Status em 2026-11-23: **planejamento**, sem código ainda.
+Documento vivo. Status em 2026-11-24: **Fases 0 e 1 entregues localmente** (aguardando validação do autor e push).
 
 ## 1. Objetivos
 
@@ -123,9 +123,9 @@ Cada fase termina com:
 
 | Fase | Estado |
 |---|---|
-| 0. Fundação | ⏳ próxima |
-| 1. core | — |
-| 2. memory | — |
+| 0. Fundação | ✅ local (2026-11-24); falta push e o CI rodar no GitHub |
+| 1. core | ✅ local (2026-11-24); falta o autor validar no Garimpei |
+| 2. memory | ⏳ próxima |
 | 3. bootstrap + chapéus | — |
 | 4. dev-workflow | — |
 | 5. Orquestração | — |
@@ -145,19 +145,23 @@ Cada fase termina com:
 
 ## 7. Versionamento e distribuição
 
-- A decidir na Fase 0 (ADR): **SHA do commit** (sem `version`: todo merge chega a quem instalou) ou **semver com
-  `claude plugin tag`** (melhor para estranhos: atualizações explícitas). Tendência: SHA enquanto privado, semver
-  ao abrir.
+- **Decidido (ADR 0001):** semver desde `0.1.0`, com `claude plugin tag` nos releases. O `validate --strict` exige
+  `version`, e o marketplace por caminho local ignora o pin durante o desenvolvimento.
 - Uso em projeto: o `.claude/settings.json` declara `extraKnownMarketplaces.working-bee` (fonte GitHub) e
   `enabledPlugins`, de modo que quem confiar na pasta recebe o convite para instalar.
 
 ## 8. Riscos e dúvidas em aberto
 
-- **Equipes de agentes** são experimentais: confirmar o estado atual na Fase 0 antes de prometer qualquer coisa.
-- **Workflows em script** (o marketplace da empresa usa um tool `Workflow` com `.workflow.js`): confirmar
-  disponibilidade e documentação.
-- **Python no Windows:** `python` ou `python3`, e o shell em que o hook roda. Resolver na Fase 1 e registrar em
-  `gotchas.md`.
+- **Equipes de agentes** (verificado em 2026-11-24): existem, são experimentais e vêm desligadas; liga-se com
+  `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Entram na Fase 5 como experimento, sem promessa.
+- **Workflows em script** (verificado em 2026-11-24): plugins podem trazer `workflows/*.js` (está na referência
+  oficial de plugins). Estudar a documentação na Fase 5.
+- ~~Python no Windows~~ **resolvido** (ADR 0002): o `python3` era o stub da Microsoft Store, que sai com 49 e
+  desliga a trava em silêncio. O lançador `run.sh` sonda e guarda o Python certo.
+- **Regras por projeto:** o `userConfig` fica no nível de usuário. Resolvido com `.claude/working-bee.json`
+  (ADR 0003).
+- **Auditoria (PostToolUse) adiada:** um log de comandos pode guardar segredos digitados no comando. Reavaliar
+  junto com o plugin `privacy` (Fase 3).
 - **Nomes temáticos de abelha** para os plugins (por exemplo, `hive` para orquestração): a tendência é manter
   nomes funcionais e deixar o tema só no README e no logo.
 - **`voice`:** vale publicar uma skill que só funciona no Windows? Decidir na Fase 3.

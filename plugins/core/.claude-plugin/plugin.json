@@ -1,0 +1,33 @@
+{
+  "name": "core",
+  "version": "0.1.0",
+  "description": "Guardrails for git, shell and secret files, a session brief and git context that survives compaction. The base every working-bee plugin depends on.",
+  "author": {
+    "name": "Patterson Silva",
+    "url": "https://github.com/pattersonrptr"
+  },
+  "homepage": "https://github.com/pattersonrptr/working-bee",
+  "repository": "https://github.com/pattersonrptr/working-bee",
+  "license": "MIT",
+  "keywords": [
+    "guardrails",
+    "hooks",
+    "git",
+    "secrets",
+    "session"
+  ],
+  "userConfig": {
+    "protected_branches": {
+      "type": "string",
+      "title": "Protected branches",
+      "description": "Comma-separated branches Claude must not commit or push to directly. A project's .claude/working-bee.json overrides this.",
+      "default": "main,master"
+    },
+    "brief_open_prs": {
+      "type": "boolean",
+      "title": "List open PRs in the session brief",
+      "description": "Calls `gh pr list` when a session starts. Turn off if gh is not installed or the network is slow.",
+      "default": true
+    }
+  }
+}
