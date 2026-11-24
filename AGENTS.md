@@ -1,7 +1,7 @@
 # working-bee — rules for agents
 
 A Claude Code plugin marketplace. Plugins live in `plugins/<name>/`; the catalog is `.claude-plugin/marketplace.json`.
-Read `PLAN.md` (roadmap and status) and `docs/concepts.md` (how Claude Code fits together) before planning.
+Read `docs/roadmap.md` (goals, phases and status) and `docs/concepts.md` (how Claude Code fits together) before planning.
 
 ## Commands
 

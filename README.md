@@ -7,7 +7,7 @@ Claude Code plugins for a developer who works solo but wants the habits of a tea
 expensive mistakes, project memory that turns errors into rules, a one-command project bootstrap, reviewer
 subagents and parallel orchestration. Configure once, reuse in every repository.
 
-**Status:** early. `core` and `memory` work; the rest is on the [roadmap](PLAN.md).
+**Status:** early. `core` and `memory` work; the rest is on the [roadmap](docs/roadmap.md).
 
 ## Plugins
 
