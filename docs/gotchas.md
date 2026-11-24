@@ -35,8 +35,17 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
   keep their own defaults, so an unset option never changes behavior.
 - **`claude plugin validate --strict` fails without a `version`** (2026-11-24). See
   [ADR 0001](decisions/0001-versioning.md).
+- **`enabledPlugins` in a project's settings is not an installation** (2026-11-24). Each machine still runs
+  `claude plugin install core@working-bee --scope project` once (which also rewrites the key order of
+  `.claude/settings.json`: restore it with git if you care about the diff). A plugin that works may just be riding
+  on an install made somewhere else.
 - **A local-path marketplace ignores the version pin** (docs, 2026-11-24): edits apply on the next session or
   `/reload-plugins`, which is what you want while developing.
+
+## Permissions
+
+- **`Write(path)` deny rules are ignored** (Claude Code warning, 2026-11-24): file permission checks only match
+  `Edit(path)`, which covers every file-editing tool. `Read(path)` is separate. `/core:audit-settings` flags it.
 
 ## Windows and git
 
