@@ -3,7 +3,7 @@
 > **working bee** (Australian and British English) is a mutirão: people who get together to do, for free, a job
 > nobody would finish alone. Here the neighbours are agents, and the barn is your project.
 
-Living document. Status on 2026-11-24: **phases 0, 1 and 2 done**; phase 3 built, waiting for the author's real test. The repository is public.
+Living document. Status on 2026-11-24: **phases 0 to 3 done**; phase 4 in progress. The repository is public.
 
 ## 1. Goals
 
@@ -117,8 +117,8 @@ Each phase ends with: behavior validated locally by the author; entries in `docs
 | 0. Foundation | ✅ 2026-11-24 |
 | 1. core | ✅ 2026-11-24, validated by the author in Garimpei |
 | 2. memory | ✅ 2026-11-24: a private project got its AGENTS.md from `/memory:agents-md init`; a real mistake became a rule with `/memory:learn`; history audit clean |
-| 3. bootstrap + hats | ⏳ validated by the author: `privacy` in two private projects (0.1.0, then 0.2.0 asks instead of blocking); `/bootstrap` on an empty repository and on one with `CLAUDE.md` but no `AGENTS.md` (rules migrated, none lost); waiting for the PR |
-| 4. dev-workflow | — |
+| 3. bootstrap + hats | ✅ 2026-11-24, validated by the author: `privacy` in two private projects (0.1.0, then 0.2.0 asks instead of blocking); `/bootstrap` on an empty repository and on one with `CLAUDE.md` but no `AGENTS.md` (rules migrated, none lost). Merged in PR #2 |
+| 4. dev-workflow | ⏳ `/review` built (4 agents, adversarial pass), tested headless; next: `/plan`, `/slice`, `/quiz`, `/dependabot-triage` |
 | 5. Orchestration | — |
 | 6. Quality and launch | — |
 | 7. Optional | — |
