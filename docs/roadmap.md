@@ -117,7 +117,7 @@ Each phase ends with: behavior validated locally by the author; entries in `docs
 | 0. Foundation | ✅ 2026-11-24 |
 | 1. core | ✅ 2026-11-24, validated by the author in Garimpei |
 | 2. memory | ✅ 2026-11-24: a private project got its AGENTS.md from `/memory:agents-md init`; a real mistake became a rule with `/memory:learn`; history audit clean |
-| 3. bootstrap + hats | ⏳ built and tested headless; `privacy` validated by the author in two private projects (0.1.0, then 0.2.0 asks instead of blocking); waiting for a real `/bootstrap` |
+| 3. bootstrap + hats | ⏳ validated by the author: `privacy` in two private projects (0.1.0, then 0.2.0 asks instead of blocking); `/bootstrap` on an empty repository and on one with `CLAUDE.md` but no `AGENTS.md` (rules migrated, none lost); waiting for the PR |
 | 4. dev-workflow | — |
 | 5. Orchestration | — |
 | 6. Quality and launch | — |
