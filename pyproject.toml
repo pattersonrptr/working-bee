@@ -1,0 +1,8 @@
+# Tooling only: the plugins themselves need nothing but Python 3.10+ and its standard library.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:anyio"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"

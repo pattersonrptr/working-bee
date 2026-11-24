@@ -1,0 +1,6 @@
+{
+  "core": {
+    "protected_branches": ["main"],
+    "brief": { "read_first": ["docs/roadmap.md", "docs/gotchas.md"] }
+  }
+}

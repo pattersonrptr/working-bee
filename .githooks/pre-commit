@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Privacy check before every commit. Install once per clone:
+#   git config core.hooksPath .githooks
+set -e
+root="$(git rev-parse --show-toplevel)"
+for name in python3 python; do
+  if "$name" -c 'import sys; sys.exit(sys.version_info < (3, 10))' >/dev/null 2>&1; then
+    exec "$name" -I "$root/tools/privacy_check.py"
+  fi
+done
+echo "pre-commit: no Python 3.10+ found; privacy check not run" >&2
+exit 1

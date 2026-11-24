@@ -1,0 +1,2 @@
+# Hooks run under bash: a CRLF in a shell script breaks it ($'\r': command not found).
+* text=auto eol=lf

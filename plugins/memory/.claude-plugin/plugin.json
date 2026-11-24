@@ -1,0 +1,14 @@
+{
+  "name": "memory",
+  "version": "0.1.0",
+  "description": "Project memory that improves with use: /learn turns a mistake into a one-line rule, /gotcha records a surprise with its fix, /agents-md creates, audits and updates AGENTS.md.",
+  "author": {
+    "name": "Patterson Silva",
+    "url": "https://github.com/pattersonrptr"
+  },
+  "homepage": "https://github.com/pattersonrptr/working-bee",
+  "repository": "https://github.com/pattersonrptr/working-bee",
+  "license": "MIT",
+  "keywords": ["memory", "agents-md", "claude-md", "learn-from-mistakes", "gotchas"],
+  "dependencies": ["core"]
+}
