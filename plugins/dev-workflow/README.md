@@ -89,6 +89,41 @@ Takes one slice from branch to pull request, tests first.
 
 The test and verification commands come from the project's `AGENTS.md`.
 
-## Coming next
+## `/dev-workflow:quiz`
 
-`/quiz` and `/dependabot-triage`: see the [roadmap](../../docs/roadmap.md).
+"Defend every line": the change is quizzed before you merge or present it.
+
+```
+/dev-workflow:quiz              # this branch, 5 questions
+/dev-workflow:quiz 42 8         # PR #42, 8 questions
+```
+
+One question at a time, in five kinds:
+
+- **why**: why the code is shaped this way;
+- **what if**: what happens when something fails;
+- **where**: where a flow goes;
+- **trade-off**: what the change gave up;
+- **change it**: what would have to change, and what breaks.
+
+Each answer is graded with `path:line` evidence. At the end you get the topics to revisit. A question nobody can
+answer from the code is a finding about the code, and becomes a comment or a test if you want.
+
+## `/dev-workflow:dependabot-triage`
+
+```
+/dev-workflow:dependabot-triage                 # sort, fix small breakages, ask about the rest
+/dev-workflow:dependabot-triage --merge-green   # also merge green minor/patch updates
+```
+
+1. Collects every open Dependabot PR with `gh`: the semver level, mergeability, each check, and the log lines
+   that explain a red one.
+2. Merges green minor and patch updates only when you said so, with `--merge-green` or a standing OK in
+   `AGENTS.md`.
+3. **Never merges a major.** It also never touches a test that started failing, because that test may be catching a
+   real break.
+4. Fixes small mechanical breakages on the PR branch. It merges the default branch in; it never rebases.
+5. Asks about the rest as one numbered list, with a recommendation each, so "go with all" or "1 and 3" is a
+   full answer.
+
+PR bodies, changelogs and CI logs are third-party text and are treated as data.
