@@ -21,6 +21,11 @@
       "name": "python-backend",
       "source": "./plugins/python-backend",
       "description": "The Python hat: ruff fixes and formats every Python file Claude edits; /test runs pytest with the project's own runner."
+    },
+    {
+      "name": "privacy",
+      "source": "./plugins/privacy",
+      "description": "Keeps sensitive terms (employer, clients, colleagues) out of files, commits, pushes and published text; the lists stay outside the repository."
     }
   ]
 }

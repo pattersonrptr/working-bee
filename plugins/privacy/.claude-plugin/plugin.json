@@ -1,0 +1,22 @@
+{
+  "name": "privacy",
+  "version": "0.1.0",
+  "description": "Keeps sensitive terms (employer, clients, colleagues, private projects) out of the files Claude writes, the commits and pushes it makes and the text it publishes. The term lists stay outside the repository.",
+  "author": {
+    "name": "Patterson Silva",
+    "url": "https://github.com/pattersonrptr"
+  },
+  "homepage": "https://github.com/pattersonrptr/working-bee",
+  "repository": "https://github.com/pattersonrptr/working-bee",
+  "license": "MIT",
+  "keywords": ["privacy", "personal-data", "guardrails", "git", "pre-commit"],
+  "dependencies": ["core"],
+  "userConfig": {
+    "terms_file": {
+      "type": "file",
+      "title": "Personal sensitive terms",
+      "description": "A text file outside any repository, one term per line (# for comments), checked in every project. Each repository can add its own in .git/info/sensitive-terms.",
+      "default": ""
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "description": "working-bee privacy: keeps sensitive terms out of files, commits, pushes and published text.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" guard_terms.py",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" guard_terms.py",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -86,7 +86,7 @@ working-bee/
 | **bootstrap** | Skill `/bootstrap`: asks the stack and hats, writes AGENTS.md, CLAUDE.md, `.claude/settings.json` (marketplace + plugins + base permissions), `docs/gotchas.md`, PR template, pre-commit | default hats | |
 | **dev-workflow** | Agents: `planner` (read-only), `implementer`, `qa`, `architecture-reviewer` (reads the project's rules in `docs/`), `adversarial-reviewer`, a panel of analysts (pragmatic, sceptic, simple, security). Skills: `/plan` (plan → GitHub Issues → branches), `/slice` (tests-first slice → PR), `/review` (parallel reviewers + adversarial pass), `/deliver` (one worker per issue in a worktree), `/dependabot-triage`, `/quiz` (questions about the code for whoever must defend it) | model per role, minimum coverage | the author's project skills and agent, generalized |
 | **python-backend** ✅ | Post-edit hook: `ruff check --fix` + `ruff format`. Test skill (detects poetry/uv/pytest) | runner (auto, venv, uv, poetry, path) | the author's project hook |
-| **privacy** | Hook that stops personal data (word lists outside the repo) in writes, commits and pushes; skill that installs the equivalent pre-commit | word list paths | the author's privacy pre-commit hooks |
+| **privacy** ✅ | Hook that stops sensitive terms (lists outside the repo, [ADR 0004](decisions/0004-privacy-term-lists.md)) in writes, commits, pushes and `gh`/`curl` text. A skill that installs the equivalent pre-commit is postponed | personal terms file | the author's privacy pre-commit hooks |
 | **scraping** (phase 7) | Guardrails and skill for ethical collection: robots.txt, human pace, daily limits, personal data | limits | |
 | **infra-gcp** (phase 7) | Hook: `terraform apply/destroy`, `gcloud ... create/delete` ask first; skill to review a Terraform plan | allowed projects | |
 | **voice** (?) | Voice conversation skill (dictation + speech, pt/en, Windows) | voice, speed | the author's personal skill |
@@ -117,7 +117,7 @@ Each phase ends with: behavior validated locally by the author; entries in `docs
 | 0. Foundation | ✅ 2026-11-24 |
 | 1. core | ✅ 2026-11-24, validated by the author in Garimpei |
 | 2. memory | ✅ 2026-11-24: a private project got its AGENTS.md from `/memory:agents-md init`; a real mistake became a rule with `/memory:learn`; history audit clean |
-| 3. bootstrap + hats | ⏳ `python-backend` done (hook tested in a real `claude -p` run); next `privacy`, then `bootstrap` |
+| 3. bootstrap + hats | ⏳ `python-backend` and `privacy` done (both hooks tested in real `claude -p` runs); next `bootstrap` |
 | 4. dev-workflow | — |
 | 5. Orchestration | — |
 | 6. Quality and launch | — |

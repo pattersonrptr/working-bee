@@ -29,4 +29,5 @@ Read `docs/roadmap.md` (goals, phases and status) and `docs/concepts.md` (how Cl
 
 - Copy code, text, names or processes from proprietary sources, including the author's employer. Public documentation and original work only.
 - Commit secrets, personal data or private names (the privacy check enforces it; never `--no-verify`).
-- Write hooks that block everything on unexpected input, or that read anything but the event JSON on stdin.
+- Write hooks that block everything on unexpected input, or that read anything but the event JSON on stdin
+  (exceptions: `.claude/working-bee.json`, ADR 0003; the privacy term lists, ADR 0004).
