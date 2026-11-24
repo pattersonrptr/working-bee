@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: python -m pip install pytest
+      - run: python -m pip install pytest ruff  # ruff: python-backend hook tests
       - run: python -m pytest -q
 
   checks:

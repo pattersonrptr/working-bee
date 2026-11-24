@@ -64,6 +64,13 @@ def test_skills_have_frontmatter(entry):
         assert re.search(r"^description: .*Use when", front, re.M), f"{skill}: description needs 'Use when'"
 
 
+def test_every_launcher_is_a_copy_of_cores():
+    # a plugin cannot reach another plugin's files once installed, so each one ships its own run.sh
+    core = (ROOT / "plugins" / "core" / "hooks" / "run.sh").read_bytes()
+    for launcher in ROOT.glob("plugins/*/hooks/run.sh"):
+        assert launcher.read_bytes() == core, f"{launcher} differs from core's run.sh: copy it again"
+
+
 def test_shell_scripts_use_lf():
     for script in ROOT.glob("plugins/*/hooks/*.sh"):
         assert b"\r\n" not in script.read_bytes(), f"{script} has CRLF line endings"
@@ -126,3 +133,39 @@ def test_skill_links_point_to_existing_files(entry):
     for skill in (ROOT / entry["source"] / "skills").glob("*/SKILL.md"):
         for target in re.findall(r"\]\((references/[^)]+)\)", skill.read_text(encoding="utf-8")):
             assert (skill.parent / target).is_file(), f"{skill}: broken link {target}"
+
+
+BOOTSTRAP = ROOT / "plugins" / "bootstrap" / "skills" / "bootstrap"
+
+
+@pytest.mark.parametrize(
+    ("asset", "source"),
+    [
+        ("assets/tools/privacy_check.py", "tools/privacy_check.py"),
+        ("assets/githooks/pre-commit", ".githooks/pre-commit"),
+    ],
+)
+def test_bootstrap_ships_the_same_privacy_check_this_repo_runs(asset, source):
+    assert (BOOTSTRAP / asset).read_bytes() == (ROOT / source).read_bytes(), f"copy {source} to {asset} again"
+
+
+def test_bootstrap_settings_examples_are_valid_and_point_here():
+    text = (BOOTSTRAP / "references" / "settings.md").read_text(encoding="utf-8")
+    blocks = [json.loads(b) for b in re.findall(r"```json\n(.*?)```", text, re.S)]
+    settings = blocks[0]
+    repo = settings["extraKnownMarketplaces"][MARKETPLACE["name"]]["source"]
+    assert repo == {
+        "source": "github",
+        "repo": MARKETPLACE["owner"]["url"].split("github.com/")[1] + "/working-bee",
+    }
+    names = {e["name"] for e in ENTRIES}
+    for plugin in settings["enabledPlugins"]:
+        name, market = plugin.split("@")
+        assert market == "working-bee" and name in names, plugin
+    assert set(blocks[1]) <= names, "working-bee.json keys must be plugin names"
+
+
+def test_bootstrap_assets_mentioned_in_the_skill_exist():
+    text = (BOOTSTRAP / "SKILL.md").read_text(encoding="utf-8")
+    for asset in re.findall(r"`(assets/[^`]+)`", text):
+        assert (BOOTSTRAP / asset).is_file(), f"SKILL.md names a missing asset: {asset}"

@@ -3,7 +3,7 @@
 > **working bee** (Australian and British English) is a mutirão: people who get together to do, for free, a job
 > nobody would finish alone. Here the neighbours are agents, and the barn is your project.
 
-Living document. Status on 2026-11-24: **phases 0, 1 and 2 done**.
+Living document. Status on 2026-11-24: **phases 0, 1 and 2 done**; phase 3 built, waiting for the author's real test. The repository is public.
 
 ## 1. Goals
 
@@ -83,10 +83,10 @@ working-bee/
 |---|---|---|---|
 | **core** ✅ | Hooks: dangerous commands, secret files, protected branches, frozen paths, "ask" for the guardrails' own config; session brief; git facts before compaction. Skill `/core:audit-settings` | protected branches; per project in `.claude/working-bee.json` | the author's own project hooks, generalized |
 | **memory** ✅ | Skills `/memory:learn` (mistake → one-line rule in AGENTS.md), `/memory:gotcha`, `/memory:agents-md init\|audit\|update` | target file, gotchas file | the learn-from-mistakes idea |
-| **bootstrap** | Skill `/bootstrap`: asks the stack and hats, writes AGENTS.md, CLAUDE.md, `.claude/settings.json` (marketplace + plugins + base permissions), `docs/gotchas.md`, PR template, pre-commit | default hats | |
+| **bootstrap** ✅ | Skill `/bootstrap`: asks the stack and hats, writes AGENTS.md, CLAUDE.md, `.claude/settings.json` (marketplace + plugins + base permissions), `docs/gotchas.md`, PR template, privacy pre-commit (copy of `tools/privacy_check.py`) | none (YAGNI) | |
 | **dev-workflow** | Agents: `planner` (read-only), `implementer`, `qa`, `architecture-reviewer` (reads the project's rules in `docs/`), `adversarial-reviewer`, a panel of analysts (pragmatic, sceptic, simple, security). Skills: `/plan` (plan → GitHub Issues → branches), `/slice` (tests-first slice → PR), `/review` (parallel reviewers + adversarial pass), `/deliver` (one worker per issue in a worktree), `/dependabot-triage`, `/quiz` (questions about the code for whoever must defend it) | model per role, minimum coverage | the author's project skills and agent, generalized |
-| **python-backend** | Post-edit hook: `ruff check --fix` + `ruff format`. Test skill (detects poetry/uv/pytest) | runner (poetry, uv, pip) | the author's project hook |
-| **privacy** | Hook that stops personal data (word lists outside the repo) in writes, commits and pushes; skill that installs the equivalent pre-commit | word list paths | the author's privacy pre-commit hooks |
+| **python-backend** ✅ | Post-edit hook: `ruff check --fix` + `ruff format`. Test skill (detects poetry/uv/pytest) | runner (auto, venv, uv, poetry, path) | the author's project hook |
+| **privacy** ✅ | Hook that asks before sensitive terms (lists outside the repo, [ADR 0004](decisions/0004-privacy-term-lists.md)) or personal data found by detectors ([ADR 0005](decisions/0005-privacy-asks-and-detects.md)) leave through writes, commits, pushes and `gh`/`curl` text; per-project approvals; `/privacy:terms` adds and suggests terms. The pre-commit comes from `/bootstrap` | personal terms file, detectors on/off | the author's privacy pre-commit hooks |
 | **scraping** (phase 7) | Guardrails and skill for ethical collection: robots.txt, human pace, daily limits, personal data | limits | |
 | **infra-gcp** (phase 7) | Hook: `terraform apply/destroy`, `gcloud ... create/delete` ask first; skill to review a Terraform plan | allowed projects | |
 | **voice** (?) | Voice conversation skill (dictation + speech, pt/en, Windows) | voice, speed | the author's personal skill |
@@ -117,7 +117,7 @@ Each phase ends with: behavior validated locally by the author; entries in `docs
 | 0. Foundation | ✅ 2026-11-24 |
 | 1. core | ✅ 2026-11-24, validated by the author in Garimpei |
 | 2. memory | ✅ 2026-11-24: a private project got its AGENTS.md from `/memory:agents-md init`; a real mistake became a rule with `/memory:learn`; history audit clean |
-| 3. bootstrap + hats | ⏳ next |
+| 3. bootstrap + hats | ⏳ validated by the author: `privacy` in two private projects (0.1.0, then 0.2.0 asks instead of blocking); `/bootstrap` on an empty repository and on one with `CLAUDE.md` but no `AGENTS.md` (rules migrated, none lost); waiting for the PR |
 | 4. dev-workflow | — |
 | 5. Orchestration | — |
 | 6. Quality and launch | — |
@@ -160,7 +160,7 @@ Each phase ends with: behavior validated locally by the author; entries in `docs
   the `privacy` plugin (phase 3).
 - **Bee-themed plugin names** (such as `hive` for orchestration): leaning towards functional names, with the theme
   only in the README and the logo.
-- **`voice`:** is a Windows-only skill worth publishing? Decide in phase 3.
+- **`voice`:** is a Windows-only skill worth publishing? Postponed on 2026-11-24, still open.
 
 ## 9. References
 

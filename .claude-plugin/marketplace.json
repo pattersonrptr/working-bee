@@ -16,6 +16,21 @@
       "name": "memory",
       "source": "./plugins/memory",
       "description": "Project memory that improves with use: /learn turns a mistake into a rule, /gotcha records a surprise, /agents-md keeps AGENTS.md accurate."
+    },
+    {
+      "name": "python-backend",
+      "source": "./plugins/python-backend",
+      "description": "The Python hat: ruff fixes and formats every Python file Claude edits; /test runs pytest with the project's own runner."
+    },
+    {
+      "name": "privacy",
+      "source": "./plugins/privacy",
+      "description": "Asks before sensitive terms or personal data (e-mails, phones, CPF, addresses, internal hosts) leave through files, commits, pushes or published text."
+    },
+    {
+      "name": "bootstrap",
+      "source": "./plugins/bootstrap",
+      "description": "/bootstrap prepares a repository in one pass: marketplace and plugins in .claude/settings.json, safe permissions, AGENTS.md, gotchas, PR template, privacy pre-commit."
     }
   ]
 }

@@ -1,0 +1,17 @@
+{
+  "description": "working-bee python-backend: ruff fixes and formats each Python file Claude edits, and reports what it cannot fix.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" ruff_after_edit.py",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

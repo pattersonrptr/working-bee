@@ -12,7 +12,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_HOOKS = ROOT / "plugins" / "core" / "hooks"
+PLUGINS = ROOT / "plugins"
+CORE_HOOKS = PLUGINS / "core" / "hooks"
 
 
 @dataclass
@@ -46,15 +47,17 @@ def clean_env(project: Path, **options: str) -> dict[str, str]:
     return env
 
 
-def run_hook(script: str, event: dict, project: Path, **options: str) -> Result:
+def run_hook(
+    script: str, event: dict, project: Path, plugin: str = "core", env: dict | None = None, **options: str
+) -> Result:
     event = {"session_id": "test", "cwd": str(project), **event}
     proc = subprocess.run(
-        [sys.executable, "-I", str(CORE_HOOKS / script)],
+        [sys.executable, "-I", str(PLUGINS / plugin / "hooks" / script)],
         input=json.dumps(event),
         capture_output=True,
         text=True,
         encoding="utf-8",
-        env=clean_env(project, **options),
+        env={**clean_env(project, **options), **(env or {})},
         timeout=30,
     )
     return Result(proc.returncode, proc.stdout, proc.stderr)

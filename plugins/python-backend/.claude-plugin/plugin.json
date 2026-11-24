@@ -1,0 +1,22 @@
+{
+  "name": "python-backend",
+  "version": "0.1.0",
+  "description": "The Python hat: ruff fixes and formats every Python file Claude edits and hands back what it cannot fix; /test runs pytest with the project's own runner (uv, poetry or a venv).",
+  "author": {
+    "name": "Patterson Silva",
+    "url": "https://github.com/pattersonrptr"
+  },
+  "homepage": "https://github.com/pattersonrptr/working-bee",
+  "repository": "https://github.com/pattersonrptr/working-bee",
+  "license": "MIT",
+  "keywords": ["python", "ruff", "pytest", "formatter", "uv", "poetry"],
+  "dependencies": ["core"],
+  "userConfig": {
+    "runner": {
+      "type": "string",
+      "title": "How to run ruff",
+      "description": "auto (project .venv, then poetry run if there is a poetry.lock, then ruff on PATH), venv, uv, poetry or path. A project's .claude/working-bee.json overrides this.",
+      "default": "auto"
+    }
+  }
+}

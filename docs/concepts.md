@@ -48,6 +48,9 @@ or irreversible (a push to `main`, a leaked `.env`), make it a hook.
   "ask", "permissionDecisionReason": "..."}}`. Decisions combine as deny > defer > ask > allow.
 - **SessionStart** stdout becomes context for the session. **PreCompact** stdout becomes instructions for the
   compaction summary.
+- **PostToolUse** ([python-backend](../plugins/python-backend/)) runs after the tool, so it cannot stop it.
+  `{"decision": "block", "reason": "..."}` puts the reason next to the tool result, for Claude to act on (lint
+  errors left after a formatter); `hookSpecificOutput.additionalContext` adds a note; exit 2 shows stderr.
 - `matcher` is a regex on the tool name (`Bash|PowerShell`, `Edit|Write`).
 - Plugin hooks get `CLAUDE_PLUGIN_ROOT` (the installed plugin, changes on update), `CLAUDE_PLUGIN_DATA`
   (persistent storage), `CLAUDE_PROJECT_DIR` and `CLAUDE_PLUGIN_OPTION_<KEY>` in their environment.
@@ -57,7 +60,10 @@ or irreversible (a push to `main`, a leaked `.env`), make it a hook.
 - `SKILL.md` frontmatter: `name` (matches the folder), `description` (what it does **and when to use it**: this is
   all Claude sees until the skill loads, so it decides whether the skill triggers), `argument-hint`,
   `allowed-tools` (tools usable without a prompt while the skill runs).
-- `$ARGUMENTS` in the body is replaced by whatever follows `/plugin:skill`.
+- `$ARGUMENTS` in the body is replaced by whatever follows `/plugin:skill`. `${CLAUDE_SKILL_DIR}` (the skill's
+  folder), `${CLAUDE_PLUGIN_ROOT}` and `${CLAUDE_PROJECT_DIR}` are replaced too: that is how
+  [bootstrap](../plugins/bootstrap/) finds the templates it copies.
+- A plugin skill also answers to its bare name (`/bootstrap`) when no other command uses it.
 - Plugin skills are namespaced: `/memory:learn`. Claude can also invoke them on its own when the description
   matches the situation.
 - **Progressive disclosure:** keep `SKILL.md` short and link to `references/*.md`, which Claude reads only when
@@ -77,7 +83,11 @@ or irreversible (a push to `main`, a leaked `.env`), make it a hook.
   `claude plugin install memory@working-bee` reports "+ 1 dependency: core".
 - `claude plugin validate <path> --strict` checks manifests, skills, agents and hooks; `claude plugin details`
   shows the token cost of a plugin; `claude plugin eval` runs eval suites with and without the plugin.
+- A project declares a marketplace with `"extraKnownMarketplaces": {"working-bee": {"source": {"source": "github",
+  "repo": "owner/repo"}}}` and switches plugins on with `enabledPlugins`; both apply only after the folder is trusted.
 - A local-path marketplace reads the folder directly: edits apply on the next session or `/reload-plugins`.
+- `claude --plugin-dir plugins/<name> -p "..."` loads one plugin for a single run: the quickest end-to-end test of
+  a hook against a real Claude Code.
 
 ## Orchestration (planned: phases 4 and 5)
 
