@@ -1,7 +1,7 @@
 {
   "name": "privacy",
-  "version": "0.1.0",
-  "description": "Keeps sensitive terms (employer, clients, colleagues, private projects) out of the files Claude writes, the commits and pushes it makes and the text it publishes. The term lists stay outside the repository.",
+  "version": "0.2.0",
+  "description": "Asks before sensitive terms (people, teams, clients, internal codenames) or personal data (e-mails, phones, CPF, CNPJ, CEP, addresses, internal hosts, private IPs) leave through files, commits, pushes or published text. Only you can approve. The term lists stay outside the repository; /privacy:terms adds and suggests terms.",
   "author": {
     "name": "Patterson Silva",
     "url": "https://github.com/pattersonrptr"
@@ -9,14 +9,20 @@
   "homepage": "https://github.com/pattersonrptr/working-bee",
   "repository": "https://github.com/pattersonrptr/working-bee",
   "license": "MIT",
-  "keywords": ["privacy", "personal-data", "guardrails", "git", "pre-commit"],
+  "keywords": ["privacy", "personal-data", "pii", "guardrails", "git", "lgpd"],
   "dependencies": ["core"],
   "userConfig": {
     "terms_file": {
       "type": "file",
       "title": "Personal sensitive terms",
-      "description": "A text file outside any repository, one term per line (# for comments), checked in every project. Each repository can add its own in .git/info/sensitive-terms.",
+      "description": "A text file outside any repository, one term per line, checked in every project. Empty means ~/.config/working-bee/sensitive-terms.txt, which /privacy:terms creates.",
       "default": ""
+    },
+    "detectors": {
+      "type": "boolean",
+      "title": "Detect personal data with no list",
+      "description": "E-mails, phones, CPF, CNPJ, CEP, addresses, internal hosts and private IPs. A project can allow some in .claude/working-bee.json.",
+      "default": true
     }
   }
 }

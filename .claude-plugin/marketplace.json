@@ -25,7 +25,7 @@
     {
       "name": "privacy",
       "source": "./plugins/privacy",
-      "description": "Keeps sensitive terms (employer, clients, colleagues) out of files, commits, pushes and published text; the lists stay outside the repository."
+      "description": "Asks before sensitive terms or personal data (e-mails, phones, CPF, addresses, internal hosts) leave through files, commits, pushes or published text."
     },
     {
       "name": "bootstrap",

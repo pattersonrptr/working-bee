@@ -1,6 +1,7 @@
 # 0004. The privacy hook reads term lists kept outside the repository
 
-Date: 2026-11-24. Status: accepted.
+Date: 2026-11-24. Status: accepted; amended by [ADR 0005](0005-privacy-asks-and-detects.md) (asks instead of
+blocking, detectors, per-project approvals, default personal file).
 
 ## Context
 

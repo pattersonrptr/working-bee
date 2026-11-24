@@ -86,7 +86,7 @@ working-bee/
 | **bootstrap** ✅ | Skill `/bootstrap`: asks the stack and hats, writes AGENTS.md, CLAUDE.md, `.claude/settings.json` (marketplace + plugins + base permissions), `docs/gotchas.md`, PR template, privacy pre-commit (copy of `tools/privacy_check.py`) | none (YAGNI) | |
 | **dev-workflow** | Agents: `planner` (read-only), `implementer`, `qa`, `architecture-reviewer` (reads the project's rules in `docs/`), `adversarial-reviewer`, a panel of analysts (pragmatic, sceptic, simple, security). Skills: `/plan` (plan → GitHub Issues → branches), `/slice` (tests-first slice → PR), `/review` (parallel reviewers + adversarial pass), `/deliver` (one worker per issue in a worktree), `/dependabot-triage`, `/quiz` (questions about the code for whoever must defend it) | model per role, minimum coverage | the author's project skills and agent, generalized |
 | **python-backend** ✅ | Post-edit hook: `ruff check --fix` + `ruff format`. Test skill (detects poetry/uv/pytest) | runner (auto, venv, uv, poetry, path) | the author's project hook |
-| **privacy** ✅ | Hook that stops sensitive terms (lists outside the repo, [ADR 0004](decisions/0004-privacy-term-lists.md)) in writes, commits, pushes and `gh`/`curl` text. A skill that installs the equivalent pre-commit is postponed | personal terms file | the author's privacy pre-commit hooks |
+| **privacy** ✅ | Hook that asks before sensitive terms (lists outside the repo, [ADR 0004](decisions/0004-privacy-term-lists.md)) or personal data found by detectors ([ADR 0005](decisions/0005-privacy-asks-and-detects.md)) leave through writes, commits, pushes and `gh`/`curl` text; per-project approvals; `/privacy:terms` adds and suggests terms. The pre-commit comes from `/bootstrap` | personal terms file, detectors on/off | the author's privacy pre-commit hooks |
 | **scraping** (phase 7) | Guardrails and skill for ethical collection: robots.txt, human pace, daily limits, personal data | limits | |
 | **infra-gcp** (phase 7) | Hook: `terraform apply/destroy`, `gcloud ... create/delete` ask first; skill to review a Terraform plan | allowed projects | |
 | **voice** (?) | Voice conversation skill (dictation + speech, pt/en, Windows) | voice, speed | the author's personal skill |
@@ -117,7 +117,7 @@ Each phase ends with: behavior validated locally by the author; entries in `docs
 | 0. Foundation | ✅ 2026-11-24 |
 | 1. core | ✅ 2026-11-24, validated by the author in Garimpei |
 | 2. memory | ✅ 2026-11-24: a private project got its AGENTS.md from `/memory:agents-md init`; a real mistake became a rule with `/memory:learn`; history audit clean |
-| 3. bootstrap + hats | ⏳ built and tested headless (`claude -p --plugin-dir`); done when the author bootstraps a real repository and two private projects use `privacy` |
+| 3. bootstrap + hats | ⏳ built and tested headless; `privacy` validated by the author in two private projects (0.1.0, then 0.2.0 asks instead of blocking); waiting for a real `/bootstrap` |
 | 4. dev-workflow | — |
 | 5. Orchestration | — |
 | 6. Quality and launch | — |

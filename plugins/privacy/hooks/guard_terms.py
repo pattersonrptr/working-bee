@@ -1,28 +1,29 @@
-"""Keep sensitive terms (employer, clients, colleagues, private projects) out of files, commits and pushes.
+"""Keep sensitive terms and personal data out of files, commits, pushes and published text.
 
-Terms come from two plain-text files, one term per line, ``#`` for comments,
-matched case and accent insensitively as substrings:
+What counts as sensitive: the term lists and the detectors in ``_privacy.py``
+(names the user listed; e-mails, phones, CPF, CNPJ, CEP, addresses, internal
+hosts and private IPs found with no list).
 
-- ``.git/info/sensitive-terms`` of the project: inside ``.git/``, so it is never
-  committed (the same file ``tools/privacy_check.py`` reads);
-- the personal file set in the plugin option ``terms_file``, for terms that
-  apply to every project.
-
-This is the one documented exception to "hooks read only the event JSON"
-(ADR 0004): the list cannot be in the event, and must not be in the repository.
+The guard **asks** instead of blocking: the permission prompt shows what was
+found (masked), and only the user can approve it. "The secret is not the name,
+it is the approval": a public resume may name an employer; an internal
+codename should never leave without someone saying yes. A repository that
+publishes some of it on purpose allows it in ``.claude/working-bee.json``,
+which is reviewed like code and whose edits always ask.
 
 Events:
 
-- PreToolUse on Write/Edit/MultiEdit/NotebookEdit: blocks text that adds a term
-  (an edit that keeps a term already there passes, so old files stay editable).
+- PreToolUse on Write/Edit/MultiEdit/NotebookEdit: text that adds a finding
+  (an edit that keeps one already there passes, so old files stay editable).
 - PreToolUse on Bash/PowerShell: ``git commit`` checks the staged changes
-  (``-a`` adds the tracked ones) and the command itself; ``git push`` checks
-  the commits that are on no remote yet; ``gh``, ``curl`` and ``wget`` check the
-  command text, which is what they would publish.
-- SessionStart: says how many terms are loaded, never which.
+  (``-a`` adds the tracked ones) and the command, which holds the message;
+  ``git push`` checks the commits on no remote yet; ``gh``, ``curl`` and
+  ``wget`` check the command text, which is what they would publish.
+- SessionStart: how many terms are loaded and which detectors are on, never
+  which terms.
 
-Messages mask the term (``a***z``). Exit 2 blocks and tells Claude why. Any
-unexpected error lets the call through (fail-open); ``WORKING_BEE_DEBUG=1``
+Without a person to ask (``claude -p``), "ask" means the call does not run.
+Any unexpected error lets the call through (fail-open); ``WORKING_BEE_DEBUG=1``
 re-raises.
 """
 
@@ -31,14 +32,14 @@ from __future__ import annotations
 import json
 import os
 import re
-import subprocess
 import sys
-import unicodedata
 from pathlib import Path
 from typing import Any
 
-HOOK = "guard_terms"
-MIN_LENGTH = 3  # shorter terms would match almost anything
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _privacy as p  # noqa: E402
+
+HOOK = "privacy"
 MAX_FINDINGS = 8
 WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
 SHELL_TOOLS = {"Bash", "PowerShell"}
@@ -47,81 +48,23 @@ COMMIT_ALL = re.compile(r"\s(--all|-[a-zA-Z]*a[a-zA-Z]*)\b")
 PUBLISHERS = re.compile(r"(^|[;&|\s(])(gh|curl|wget|Invoke-WebRequest|Invoke-RestMethod)\s", re.I)
 HUNK = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)")
 
+Finding = tuple[str, str, str]  # (kind, value, where)
+
 
 def debug() -> bool:
     return os.environ.get("WORKING_BEE_DEBUG") == "1"
 
 
-def norm(text: str) -> str:
-    text = unicodedata.normalize("NFKD", text.casefold())
-    return "".join(ch for ch in text if not unicodedata.combining(ch))
-
-
-def mask(term: str) -> str:
-    return f"{term[0]}***{term[-1]}"
-
-
-def safe(where: str, terms: list[str]) -> str:
-    """A location for the message, hidden when it holds a term itself (a path such as docs/<term>/)."""
-    return "a path that holds a sensitive term" if found_in(where, terms) else where
-
-
-def git(root: Path, *args: str) -> str | None:
-    try:
-        result = subprocess.run(
-            ["git", *args], cwd=str(root), capture_output=True, encoding="utf-8", errors="replace", timeout=20
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    return result.stdout if result.returncode == 0 else None
-
-
-def term_files(root: Path) -> list[Path]:
-    files = []
-    common = git(root, "rev-parse", "--git-common-dir")  # the main .git, also from a worktree
-    if common and common.strip():
-        files.append((root / common.strip()).resolve() / "info" / "sensitive-terms")
-    personal = os.environ.get("CLAUDE_PLUGIN_OPTION_TERMS_FILE", "").strip()
-    if personal:
-        files.append(Path(personal).expanduser().resolve())
-    return files
-
-
-def load_terms(files: list[Path]) -> list[str]:
-    terms: list[str] = []
-    for path in files:
-        try:
-            lines = path.read_text(encoding="utf-8").splitlines()
-        except (OSError, UnicodeDecodeError):
-            continue
-        for line in lines:
-            term = norm(line.strip())
-            if len(term) >= MIN_LENGTH and not term.startswith("#") and term not in terms:
-                terms.append(term)
-    return terms
-
-
-def found_in(text: str, terms: list[str]) -> list[str]:
-    low = norm(text)
-    return [t for t in terms if t in low]
-
-
-def added(new: str, old: str, terms: list[str]) -> list[str]:
-    """Terms that appear more often in ``new`` than in ``old``."""
-    low_new, low_old = norm(new), norm(old)
-    return [t for t in terms if low_new.count(t) > low_old.count(t)]
-
-
-def line_of(text: str, term: str) -> int:
+def line_of(text: str, kind: str, value: str) -> int:
     for number, line in enumerate(text.splitlines(), 1):
-        if term in norm(line):
+        if (p.norm(value) in p.norm(line)) if kind == "term" else (value in line):
             return number
     return 1
 
 
-def diff_findings(diff: str, terms: list[str]) -> list[tuple[str, str]]:
-    """(term, "path:line") for each added line of a unified diff with a term."""
-    out: list[tuple[str, str]] = []
+def diff_findings(diff: str, scan: p.Scanner) -> list[Finding]:
+    """Findings on the added lines of a unified diff, with path:line."""
+    out: list[Finding] = []
     path, number = None, 0
     for line in diff.splitlines():
         if line.startswith("+++ "):
@@ -129,68 +72,80 @@ def diff_findings(diff: str, terms: list[str]) -> list[tuple[str, str]]:
         elif hunk := HUNK.match(line):
             number = int(hunk.group(1))
         elif line.startswith("+") and path:
-            out += [(t, f"{path}:{number}") for t in found_in(line[1:], terms)]
+            out += [(kind, value, f"{path}:{number}") for kind, value in scan.matches(line[1:])]
             number += 1
         elif line.startswith(" "):
             number += 1
     return out
 
 
-def check_write(
-    event: dict[str, Any], root: Path, terms: list[str], files: list[Path]
-) -> list[tuple[str, str]]:
+def check_write(event: dict[str, Any], root: Path, scan: p.Scanner) -> list[Finding]:
     data = event.get("tool_input") or {}
-    raw = data.get("file_path") or data.get("notebook_path") or ""
+    raw = str(data.get("file_path") or data.get("notebook_path") or "")
     if raw:
         target = Path(raw) if Path(raw).is_absolute() else root / raw
-        if target.resolve() in files:
-            return []  # editing the list itself
+        if target.resolve() in scan.files:
+            return []  # editing a term list itself
     try:
         where = Path(raw).resolve().relative_to(root.resolve()).as_posix() if raw else "the file"
     except ValueError:
         where = raw
-    out = [(t, f"{where} (its path)") for t in found_in(raw, terms)]
+    out = [(kind, value, f"{where} (its path)") for kind, value in scan.matches(raw) if kind == "term"]
     tool = event.get("tool_name")
     if tool == "Write":
         content = str(data.get("content") or "")
-        out += [(t, f"{where}:{line_of(content, t)}") for t in found_in(content, terms)]
+        out += [(k, v, f"{where}:{line_of(content, k, v)}") for k, v in scan.added(content)]
     elif tool == "Edit":
-        new = str(data.get("new_string") or "")
-        out += [(t, where) for t in added(new, str(data.get("old_string") or ""), terms)]
+        new, old = str(data.get("new_string") or ""), str(data.get("old_string") or "")
+        out += [(k, v, where) for k, v in scan.added(new, old)]
     elif tool == "MultiEdit":
         for edit in data.get("edits") or []:
             if isinstance(edit, dict):
                 new, old = str(edit.get("new_string") or ""), str(edit.get("old_string") or "")
-                out += [(t, where) for t in added(new, old, terms)]
+                out += [(k, v, where) for k, v in scan.added(new, old)]
     elif tool == "NotebookEdit":
-        out += [(t, where) for t in found_in(str(data.get("new_source") or ""), terms)]
+        out += [(k, v, where) for k, v in scan.added(str(data.get("new_source") or ""))]
     return out
 
 
-def check_command(event: dict[str, Any], root: Path, terms: list[str]) -> list[tuple[str, str]]:
+def check_command(event: dict[str, Any], root: Path, scan: p.Scanner) -> list[Finding]:
     command = str((event.get("tool_input") or {}).get("command") or "")
-    out: list[tuple[str, str]] = []
+    out: list[Finding] = []
     calls = {m.group(1) for m in GIT_CALL.finditer(command)}
     if calls or PUBLISHERS.search(command):
-        out += [(t, "the command text") for t in found_in(command, terms)]
+        out += [(kind, value, "the command text") for kind, value in scan.matches(command)]
     if "commit" in calls:
-        diff = git(root, "diff", "--cached", "-U0", "--no-color", "--no-ext-diff") or ""
+        diff = p.git(root, "diff", "--cached", "-U0", "--no-color", "--no-ext-diff") or ""
         if COMMIT_ALL.search(command):
-            diff += git(root, "diff", "-U0", "--no-color", "--no-ext-diff") or ""
-        out += diff_findings(diff, terms)
+            diff += p.git(root, "diff", "-U0", "--no-color", "--no-ext-diff") or ""
+        out += diff_findings(diff, scan)
     if "push" in calls:
         unpushed = ("log", "HEAD", "--not", "--remotes", "--no-color", "--no-ext-diff")
-        messages = git(root, *unpushed, "--format=%h %B") or ""
-        out += [(t, "a commit message not pushed yet") for t in found_in(messages, terms)]
-        out += diff_findings(git(root, *unpushed, "-p", "-U0", "--format=") or "", terms)
+        messages = p.git(root, *unpushed, "--format=%h %B") or ""
+        out += [(k, v, "a commit message not pushed yet") for k, v in scan.matches(messages)]
+        out += diff_findings(p.git(root, *unpushed, "-p", "-U0", "--format=") or "", scan)
     return out
 
 
-def brief(terms: list[str], files: list[Path]) -> str:
-    if terms:
-        return f"privacy: {len(terms)} sensitive term(s) loaded; files, commits and pushes are checked."
-    where = " and ".join(str(f) for f in files) or ".git/info/sensitive-terms"
-    return f"privacy: no sensitive terms configured ({where}), so nothing is being checked."
+def safe(where: str, scan: p.Scanner) -> str:
+    """A location for the message, hidden when it holds a finding itself (a path such as docs/<term>/)."""
+    return "a path that holds sensitive data" if scan.matches(where) else where
+
+
+def reason(findings: list[Finding], scan: p.Scanner) -> str:
+    listed = sorted({f"{p.describe(kind, value)} in {safe(where, scan)}" for kind, value, where in findings})
+    more = f" (and {len(listed) - MAX_FINDINGS} more)" if len(listed) > MAX_FINDINGS else ""
+    return (
+        f"working-bee privacy found {'; '.join(listed[:MAX_FINDINGS])}{more}. Approve only if this is meant to "
+        "be shared. Otherwise remove or generalize it ('the employer', 'a client', 'user@example.com')."
+    )
+
+
+def brief(scan: p.Scanner) -> str:
+    on = ", ".join(scan.detectors) or "none"
+    allowed = f"; allowed in this project: {', '.join(scan.allowed)}" if scan.allowed else ""
+    terms = f"{len(scan.terms)} sensitive term(s) loaded" if scan.terms else "no sensitive terms configured"
+    return f"privacy: {terms}; detectors: {on}{allowed}. Findings in files, commits and pushes ask the user."
 
 
 def main() -> int:
@@ -199,32 +154,27 @@ def main() -> int:
         if not isinstance(event, dict):
             return 0
         root = Path(os.environ.get("CLAUDE_PROJECT_DIR") or event.get("cwd") or os.getcwd())
-        files = term_files(root)
-        terms = load_terms(files)
+        scan = p.Scanner(root)
         if event.get("hook_event_name") == "SessionStart":
-            print(brief(terms, files))
+            print(brief(scan))
             return 0
-        if not terms:
+        if not scan.terms and not scan.detectors:
             return 0
         tool = event.get("tool_name")
         if tool in WRITE_TOOLS:
-            findings = check_write(event, root, terms, files)
+            findings = check_write(event, root, scan)
         elif tool in SHELL_TOOLS:
-            findings = check_command(event, root, terms)
+            findings = check_command(event, root, scan)
         else:
             return 0
-        if not findings:
-            return 0
-        listed = sorted({f"{mask(t)} in {safe(where, terms)}" for t, where in findings})
-        more = f" (and {len(listed) - MAX_FINDINGS} more)" if len(listed) > MAX_FINDINGS else ""
-        print(
-            f"Blocked by working-bee privacy ({HOOK}): sensitive term "
-            + "; ".join(listed[:MAX_FINDINGS])
-            + f"{more}. Remove or generalize it (for example 'the employer', 'a client'). "
-            "The list lives outside the repository; do not read or print it.",
-            file=sys.stderr,
-        )
-        return 2
+        if findings:
+            decision = {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "ask",
+                "permissionDecisionReason": reason(findings, scan),
+            }
+            print(json.dumps({"hookSpecificOutput": decision}))
+        return 0
     except Exception:
         if debug():
             raise
