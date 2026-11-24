@@ -68,6 +68,9 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
   `.githooks/` were held for approval** (2026-11-24), with no working-bee guard loaded; other files were written.
   Probably Claude Code's own protection of config and hook paths (a guess). Headless tests of `/bootstrap` check
   the content the skill prints for those files instead.
+- **The transcript view (Ctrl+O) hides a skill's question** (2026-11-24). During `/bootstrap` the session looked
+  stuck after the first step; the AskUserQuestion dialog was under the detailed transcript. Press Ctrl+O again to
+  see it. Worth a line in any skill README that asks questions.
 - **A checklist that names a mechanism will be applied too widely** (2026-11-24). The audit suggested `ask_paths`
   (file paths) to guard a deploy command. Say exactly what each guard covers in the reference files.
 

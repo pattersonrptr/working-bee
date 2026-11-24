@@ -1,6 +1,6 @@
 {
   "name": "bootstrap",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "/bootstrap prepares a repository for Claude Code in one pass: working-bee marketplace and plugins in .claude/settings.json, safe permissions for its stack, AGENTS.md and CLAUDE.md, gotchas file, PR template and an optional privacy pre-commit. Merges, never overwrites.",
   "author": {
     "name": "Patterson Silva",

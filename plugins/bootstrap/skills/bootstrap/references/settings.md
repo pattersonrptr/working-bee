@@ -59,6 +59,7 @@ settings) the file is not needed.
 | `core.protected_branches` | the protected branches chosen differ from `["main", "master"]` |
 | `core.frozen_paths` | the user names files that must not change once on the default branch (applied migrations) |
 | `core.brief.read_first` | docs every session should read before planning (a roadmap, an architecture doc) |
+| `privacy.allow` | the repository publishes the author's own data on purpose (resume, portfolio): `["email", "phone"]` |
 | `python-backend.runner` | the project's runner is known and `auto` would guess wrong (for example uv without a `.venv`) |
 
 If the file exists, merge per key the same way as above.

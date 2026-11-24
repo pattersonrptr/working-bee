@@ -17,7 +17,8 @@ content to apply instead, and mark the file as pending in the report.
 
 ## 1. Look
 
-- Is it a git repository? Default branch (`git symbolic-ref refs/remotes/origin/HEAD`, else the current one).
+- Is it a git repository? Default branch (`git symbolic-ref --quiet --short refs/remotes/origin/HEAD`; it fails
+  when there is no remote, which is normal: use the current branch).
 - Stack signals and the hat each suggests: [references/stacks.md](references/stacks.md).
 - Which of these already exist: `.claude/settings.json`, `.claude/working-bee.json`, `AGENTS.md`, `CLAUDE.md`,
   `docs/gotchas.md`, `.github/pull_request_template.md`, `.gitignore`, `core.hooksPath` or another pre-commit
@@ -32,7 +33,13 @@ One round of questions (skip what `$ARGUMENTS` already answers):
    project touches an employer's, a client's or anyone's personal data. `core` and `memory` always come.
 2. **Protected branches**: the default branch found in step 1 (plus `main`/`master` if they exist).
 3. **Extras** (multi-select): PR template, `docs/gotchas.md`, privacy pre-commit (only offered if `privacy` is
-   chosen and no other pre-commit setup exists).
+   chosen and no other pre-commit setup exists), an empty `.git/info/sensitive-terms`.
+   If `privacy` is chosen and the repository publishes the author's own contact data on purpose (a resume, a
+   portfolio, a personal site), also offer `privacy.allow: ["email", "phone"]` in `.claude/working-bee.json`;
+   without it, every edit near those lines asks.
+4. **Only if `AGENTS.md` is missing**, in the same round: what the project is for, and what must never happen
+   without the user's OK. Offer "just a sandbox" as an option (keep `AGENTS.md` short). Do not open a second
+   round for the rest of the `/memory:agents-md init` interview: what is still unknown gets `(unverified)`.
 
 ## 3. Show the plan, then write
 
@@ -40,15 +47,16 @@ List each file with **create**, **merge** or **skip (exists)**, and wait for one
 
 1. `.claude/settings.json` and `.claude/working-bee.json`: shapes and merge rules in
    [references/settings.md](references/settings.md).
-2. `AGENTS.md` / `CLAUDE.md`: if `AGENTS.md` is missing, follow `/memory:agents-md init`. If it exists, offer
+2. `AGENTS.md` / `CLAUDE.md`: if `AGENTS.md` is missing, follow `/memory:agents-md init` with the answers from
+   step 2 (no new questions). If it exists, offer
    `/memory:agents-md audit` instead of touching it.
 3. `docs/gotchas.md`: the header from `/memory:gotcha`, nothing else.
 4. `.github/pull_request_template.md`: copy `assets/pull_request_template.md`.
 5. Privacy pre-commit: copy `assets/tools/privacy_check.py` to `tools/privacy_check.py` and
    `assets/githooks/pre-commit` to `.githooks/pre-commit`, then tell the user to run
    `git config core.hooksPath .githooks` once per clone (and `chmod +x .githooks/pre-commit` outside Windows).
-   The check reads the same `.git/info/sensitive-terms` as the `privacy` hook; offer to create that file empty
-   and never fill it with guesses.
+   The check reads the same `.git/info/sensitive-terms` as the `privacy` hook; create it empty only if chosen in
+   step 2, and never fill it with guesses.
 6. `.gitignore`: add whichever is missing of `.env`, `.env.*`, `!.env.example`, `.claude/settings.local.json`,
    `CLAUDE.local.md`.
 
