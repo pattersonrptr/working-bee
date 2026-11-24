@@ -7,7 +7,7 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
 - **`python3` on Windows can be the Microsoft Store stub** (verified 2026-11-24). It prints "Python was not found"
   and exits 49. Claude Code treats any exit other than 0 or 2 as a non-blocking error, so the call goes through
   and **the guard is silently off**. Fix: `plugins/core/hooks/run.sh` probes `python3`, `python` and `py -3` for
-  a real Python 3.9+ and caches the winner in `$CLAUDE_PLUGIN_DATA`.
+  a real Python 3.10+ and caches the winner in `$CLAUDE_PLUGIN_DATA`.
 - **A fail-open hook that crashes looks exactly like one that allowed the call** (2026-11-24). Tests of "this must
   pass" would pass vacuously. Fix: `WORKING_BEE_DEBUG=1` makes hooks re-raise; the test suite always sets it.
 - **Hooks read the event from stdin, not from environment variables** (2026-11-24). Scripts that read invented
@@ -58,6 +58,13 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
   in the prompt and say the user pre-approves the writes. That is what `/memory:agents-md init` was tested with.
 - **A checklist that names a mechanism will be applied too widely** (2026-11-24). The audit suggested `ask_paths`
   (file paths) to guard a deploy command. Say exactly what each guard covers in the reference files.
+
+## CI
+
+- **GitHub's `ubuntu-latest` (Ubuntu 26.04) has no Python 3.9** (2026-11-24): `setup-python` fails in seconds with
+  "version '3.9' ... was not found". 3.9 is past end of life; the minimum is now 3.10.
+- **On a private repository, macOS runners use minutes 10x and Windows 2x.** The full matrix costs about 15 billed
+  minutes per run; drop macOS from pull requests if the free quota gets tight.
 
 ## Windows and git
 

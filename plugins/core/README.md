@@ -23,7 +23,7 @@ Denied calls exit with code 2 and Claude sees the reason. If a hook crashes it l
 
 ## Requirements
 
-- Python 3.9+ (standard library only). The launcher tries `python3`, `python` and `py -3`, and skips the Windows Store stub.
+- Python 3.10+ (standard library only). The launcher tries `python3`, `python` and `py -3`, and skips the Windows Store stub.
 - `bash` (on Windows, Git Bash, which Claude Code uses for hooks).
 - Optional: `gh` for open PRs in the brief.
 

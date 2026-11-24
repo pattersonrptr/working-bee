@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run a working-bee hook with the first real Python 3.9+ on this machine.
+# Run a working-bee hook with the first real Python 3.10+ on this machine.
 #
 # Why not just "python3 hook.py": on Windows, python3 is often the Microsoft
 # Store stub. It exits 49 without running anything, Claude Code treats that as
@@ -27,7 +27,7 @@ if [ -n "$cache" ] && [ -r "$cache" ]; then
   fi
 fi
 
-probe='import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)'
+probe='import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)'
 for name in python3 python py; do
   py="$(command -v "$name" 2>/dev/null)" || continue
   flag=""
@@ -40,7 +40,7 @@ for name in python3 python py; do
   fi
 done
 
-msg="working-bee: no Python 3.9+ found (tried python3, python, py -3); its guardrails are OFF."
+msg="working-bee: no Python 3.10+ found (tried python3, python, py -3); its guardrails are OFF."
 case "$(basename "$script")" in
   session_brief.py) echo "$msg Tell the user." ;;  # stdout becomes session context
   *) echo "$msg" >&2 ;;
