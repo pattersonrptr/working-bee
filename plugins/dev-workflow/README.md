@@ -66,6 +66,29 @@ Plans before any code is written. Nothing is filed until you approve.
 Use the full names `/dev-workflow:review` and `/dev-workflow:plan`: Claude Code has built-in commands called
 `/review` and `/plan`.
 
+## `/dev-workflow:slice`
+
+Takes one slice from branch to pull request, tests first.
+
+```
+/dev-workflow:slice 42                  # the issue /plan created
+/dev-workflow:slice add CSV export      # or a description
+```
+
+1. **Branch** from the issue's branch name.
+2. **Tests only**, one or more per acceptance criterion. Then Claude **stops for your approval**. Approved tests
+   are committed on their own and never change again without your OK.
+3. **Red**: the failing run's summary goes in the body of the commit that holds the approved tests.
+4. **`implementer`** writes the least code that turns them green. It cannot edit the approved tests.
+5. **`qa`** checks four things: the approved tests are unchanged since approval (`git diff` against the approval
+   commit), every criterion has a test, the project's full verification passes, and no edge case the tests skip
+   is broken.
+6. **`/dev-workflow:review`** on the branch.
+7. **Pull request**, only after you say yes. Red and green go in the body as evidence, then CI is watched.
+   Merging stays with you.
+
+The test and verification commands come from the project's `AGENTS.md`.
+
 ## Coming next
 
-`/slice` (tests-first slice → PR), `/quiz` and `/dependabot-triage`: see the [roadmap](../../docs/roadmap.md).
+`/quiz` and `/dependabot-triage`: see the [roadmap](../../docs/roadmap.md).

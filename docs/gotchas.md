@@ -76,6 +76,9 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
 - **The transcript view (Ctrl+O) hides a skill's question** (2026-11-24). During `/bootstrap` the session looked
   stuck after the first step; the AskUserQuestion dialog was under the detailed transcript. Press Ctrl+O again to
   see it. Worth a line in any skill README that asks questions.
+- **Claude Code treats `.git/` as a sensitive path** (2026-11-24). In a headless `/slice` run, writing evidence
+  to `.git/slice/` was refused. `/slice` now keeps red and green in commit messages instead. Interactive
+  sessions ask first, which is why `/bootstrap` asks before it creates `.git/info/sensitive-terms`.
 - **A checklist that names a mechanism will be applied too widely** (2026-11-24). The audit suggested `ask_paths`
   (file paths) to guard a deploy command. Say exactly what each guard covers in the reference files.
 
