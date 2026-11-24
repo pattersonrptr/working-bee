@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Guardrails for git, shell and secret files, a session brief and git context that survives compaction. The base every working-bee plugin depends on.",
   "author": {
     "name": "Patterson Silva",

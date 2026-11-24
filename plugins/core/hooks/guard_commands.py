@@ -41,6 +41,15 @@ READERS = {
     "xxd", "od", "base64", "grep", "egrep", "rg", "findstr",
     "get-content", "gc", "select-string", "sls",
 }  # fmt: skip
+SEARCHERS = {"grep", "egrep", "rg", "findstr", "select-string", "sls"}  # first argument is a pattern
+# options whose value is the next word (so it is not a file); -e/-f also mean the pattern is not positional
+VALUE_OPTS = {  # grep and rg: case matters (-c counts, -C takes a number)
+    "-e", "-f", "--regexp", "--file", "-m", "--max-count", "-A", "-B", "-C", "-g", "--glob",
+    "-t", "--type", "-T", "--type-not",
+}  # fmt: skip
+PS_VALUE_OPTS = {"-pattern", "-path", "-literalpath", "-encoding"}  # Select-String: case-insensitive
+PATTERN_OPTS = {"-e", "-f", "--regexp", "--file"}
+FINDSTR_OPT = re.compile(r"^/[a-z](?::.*)?$", re.I)  # /s, /i, /c:"text"
 DANGEROUS_TARGETS = {"/", "~", "$home", "${home}", "$env:userprofile", ".", "..", "*", ""}
 DRIVE_ROOT = re.compile(r"^(?:[a-z]:|/[a-z])$")  # C: (Windows) or /c (Git Bash)
 
@@ -114,6 +123,33 @@ def check_git(sub: str, args: list[str], branch: str | None, protected: list[str
     return None
 
 
+def read_targets(name: str, args: list[str]) -> list[str]:
+    """The arguments of a reader command that name files (a search pattern is not a file)."""
+    if name not in SEARCHERS:
+        return args
+    files: list[str] = []
+    pattern_given, skip = False, False
+    for i, arg in enumerate(args):
+        if skip:
+            skip = False
+            if args[i - 1].lower() in ("-path", "-literalpath"):
+                files.append(arg)  # Select-String -Path file
+            continue
+        low = arg.lower()
+        if (
+            arg in PATTERN_OPTS
+            or low == "-pattern"
+            or arg.startswith(("--regexp=", "--file="))
+            or low.startswith("/c:")
+        ):
+            pattern_given = True
+        if arg.startswith("-") or (name == "findstr" and FINDSTR_OPT.match(arg)):
+            skip = arg in VALUE_OPTS or low in PS_VALUE_OPTS
+            continue
+        files.append(arg)
+    return files if pattern_given else files[1:]
+
+
 def is_dangerous_target(arg: str) -> bool:
     target = arg.strip("'\"").lower().rstrip("*").rstrip("/") or "/"
     if arg.strip("'\"") in ("*", "./*", "~/*", "/*"):
@@ -155,7 +191,7 @@ def decide(event: dict) -> Decision | None:
             decision = "deny", "gh pr merge --admin bypasses branch protection"
         elif name in RM_COMMANDS:
             decision = check_rm(tokens)
-        elif name in READERS and any(c.is_secret_file(c.basename(t)) for t in tokens[1:]):
+        elif name in READERS and any(c.is_secret_file(c.basename(t)) for t in read_targets(name, tokens[1:])):
             decision = "deny", "printing a secret file would put it in the conversation"
         else:
             call = git_call(tokens, cwd)

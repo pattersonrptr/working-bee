@@ -183,6 +183,38 @@ def test_non_secret_reads_pass(feature, command):
     assert bash(command, feature).allowed
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "grep -c KEY .env",  # -c takes no value: .env is still the file
+        "grep -A 3 KEY config/.env",
+        "grep -e KEY -e TOKEN .env",
+        "rg -i --glob '*.py' KEY .env.local",
+        "git ls-files | grep x && grep KEY .env",
+        "findstr /s /i KEY .env",
+        "Select-String -Pattern KEY -Path .env",
+        "Select-String KEY .env",
+    ],
+)
+def test_search_of_a_secret_file_is_denied(feature, command):
+    assert bash(command, feature).denied
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "git ls-files | grep -Ei '\\.env|\\.pem'",  # a pattern that mentions .env is not the file
+        "grep -rn '\\.env' src/",
+        "rg -n '.env' docs",
+        "grep -E 'id_rsa|\\.key' list.txt",
+        "findstr /c:.env notes.txt",
+        "Select-String -Pattern '.env' -Path README.md",
+    ],
+)
+def test_search_pattern_naming_a_secret_passes(feature, command):
+    assert bash(command, feature).allowed
+
+
 def test_staging_secret_is_denied(feature):
     assert bash("git add .env", feature).denied
     assert bash("git add -f config/server.pem", feature).denied
