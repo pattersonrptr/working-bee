@@ -110,3 +110,19 @@ def test_launcher_caches_python_and_survives_a_stale_cache(tmp_path: Path):
     (data / "python-cmd").write_text("/nowhere/python\n\n")
     assert run() == 2  # stale cache: probes again
     assert "nowhere" not in (data / "python-cmd").read_text()
+
+
+@pytest.mark.parametrize("entry", ENTRIES, ids=lambda e: e["name"])
+def test_dependencies_resolve_in_this_marketplace(entry):
+    names = {e["name"] for e in ENTRIES}
+    for dep in manifest(entry).get("dependencies", []):
+        name = dep if isinstance(dep, str) else dep["name"]
+        assert "@" not in name or name.endswith("@working-bee"), name
+        assert name.split("@")[0] in names, f"{entry['name']} depends on unknown plugin {name}"
+
+
+@pytest.mark.parametrize("entry", ENTRIES, ids=lambda e: e["name"])
+def test_skill_links_point_to_existing_files(entry):
+    for skill in (ROOT / entry["source"] / "skills").glob("*/SKILL.md"):
+        for target in re.findall(r"\]\((references/[^)]+)\)", skill.read_text(encoding="utf-8")):
+            assert (skill.parent / target).is_file(), f"{skill}: broken link {target}"

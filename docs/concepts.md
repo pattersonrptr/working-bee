@@ -52,6 +52,20 @@ or irreversible (a push to `main`, a leaked `.env`), make it a hook.
 - Plugin hooks get `CLAUDE_PLUGIN_ROOT` (the installed plugin, changes on update), `CLAUDE_PLUGIN_DATA`
   (persistent storage), `CLAUDE_PROJECT_DIR` and `CLAUDE_PLUGIN_OPTION_<KEY>` in their environment.
 
+## Skills in practice ([memory](../plugins/memory/))
+
+- `SKILL.md` frontmatter: `name` (matches the folder), `description` (what it does **and when to use it**: this is
+  all Claude sees until the skill loads, so it decides whether the skill triggers), `argument-hint`,
+  `allowed-tools` (tools usable without a prompt while the skill runs).
+- `$ARGUMENTS` in the body is replaced by whatever follows `/plugin:skill`.
+- Plugin skills are namespaced: `/memory:learn`. Claude can also invoke them on its own when the description
+  matches the situation.
+- **Progressive disclosure:** keep `SKILL.md` short and link to `references/*.md`, which Claude reads only when
+  needed. Context is the budget.
+- Slash skills work in headless mode too: `claude -p "/memory:agents-md audit"`.
+- `CLAUDE.md` can import other files with `@path`: `CLAUDE.md` containing `@AGENTS.md` keeps one source of truth
+  for every coding agent.
+
 ## Plugins and options
 
 - `plugin.json`: only `name` is required; set `version` (semver) so users get explicit updates
@@ -59,7 +73,8 @@ or irreversible (a push to `main`, a leaked `.env`), make it a hook.
 - `userConfig` declares options (`string`, `number`, `boolean`, `directory`, `file`; `sensitive` ones go to the OS
   keychain). Values are saved in the **user's** settings, so they are personal, not per project. Per-project rules
   need a project file ([ADR 0003](decisions/0003-project-settings-file.md)).
-- `dependencies` lists plugins installed along with this one: `["core"]` resolves in the same marketplace.
+- `dependencies` lists plugins installed along with this one: `["core"]` resolves in the same marketplace, and
+  `claude plugin install memory@working-bee` reports "+ 1 dependency: core".
 - `claude plugin validate <path> --strict` checks manifests, skills, agents and hooks; `claude plugin details`
   shows the token cost of a plugin; `claude plugin eval` runs eval suites with and without the plugin.
 - A local-path marketplace reads the folder directly: edits apply on the next session or `/reload-plugins`.

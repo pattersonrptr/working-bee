@@ -11,6 +11,11 @@
       "name": "core",
       "source": "./plugins/core",
       "description": "Guardrails for git, shell and secret files, a session brief and git context that survives compaction."
+    },
+    {
+      "name": "memory",
+      "source": "./plugins/memory",
+      "description": "Project memory that improves with use: /learn turns a mistake into a rule, /gotcha records a surprise, /agents-md keeps AGENTS.md accurate."
     }
   ]
 }

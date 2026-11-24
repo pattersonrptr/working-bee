@@ -46,6 +46,18 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
 
 - **`Write(path)` deny rules are ignored** (Claude Code warning, 2026-11-24): file permission checks only match
   `Edit(path)`, which covers every file-editing tool. `Read(path)` is separate. `/core:audit-settings` flags it.
+- **`claude -p` in a folder never opened interactively ignores the project's `permissions.allow`** (verified
+  2026-11-24). It prints "Ignoring 3 permissions.allow entries from .claude/settings.json: this workspace has not
+  been trusted." Allow rules only apply after the trust dialog is accepted once interactively (or
+  `hasTrustDialogAccepted` is set in `~/.claude.json`). Plugins and hooks still load, so only the permissions
+  differ. Fix: open the folder once with `claude` and accept the dialog before testing non-interactively.
+
+## Skills
+
+- **A skill that interviews the user cannot do so in `claude -p`** (2026-11-24). For headless tests, put the answers
+  in the prompt and say the user pre-approves the writes. That is what `/memory:agents-md init` was tested with.
+- **A checklist that names a mechanism will be applied too widely** (2026-11-24). The audit suggested `ask_paths`
+  (file paths) to guard a deploy command. Say exactly what each guard covers in the reference files.
 
 ## Windows and git
 

@@ -13,6 +13,7 @@ Read `PLAN.md` (roadmap and status) and `docs/concepts.md` (how Claude Code fits
 
 - Hooks are Python 3.9+, standard library only, run through `plugins/core/hooks/run.sh`.
 - Every hook rule gets a test that **must block** and one that **must pass**, running the hook as a subprocess with real event JSON.
+- In tests, build secret-shaped fixtures (private-key headers, tokens) by concatenating split parts at runtime, never as one literal: `tools/privacy_check.py` scans test files too and blocks the commit.
 - Hooks fail open on unexpected errors (`WORKING_BEE_DEBUG=1` re-raises), except explicit guards.
 - Docs, code and commit messages in English. Keep `SKILL.md` short; details go in `references/`.
 - A surprise that cost time goes to `docs/gotchas.md` (with the date it was verified); a decision goes to `docs/decisions/`.

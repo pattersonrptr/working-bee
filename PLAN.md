@@ -3,7 +3,7 @@
 > **working bee** (inglês da Austrália e do Reino Unido) é um mutirão: gente que se junta para fazer, de graça, um
 > trabalho que ninguém faria sozinho. Aqui, os vizinhos são agentes, e o celeiro é o seu projeto.
 
-Documento vivo. Status em 2026-11-24: **Fases 0 e 1 entregues localmente** (aguardando validação do autor e push).
+Documento vivo. Status em 2026-11-24: **Fases 0, 1 e 2 entregues localmente**. A 1 foi validada pelo autor no Garimpei (PR #236 lá). Faltam o push do working-bee e a decisão de abrir o repo.
 
 ## 1. Objetivos
 
@@ -124,9 +124,9 @@ Cada fase termina com:
 | Fase | Estado |
 |---|---|
 | 0. Fundação | ✅ local (2026-11-24); falta push e o CI rodar no GitHub |
-| 1. core | ✅ local (2026-11-24); falta o autor validar no Garimpei |
-| 2. memory | ⏳ próxima |
-| 3. bootstrap + chapéus | — |
+| 1. core | ✅ validado pelo autor no Garimpei (2026-11-24) |
+| 2. memory | ✅ local (2026-11-24): insulin-log ganhou AGENTS.md via `/memory:agents-md init`; um erro real virou regra com `/memory:learn`. Falta a decisão de abrir o repo |
+| 3. bootstrap + chapéus | ⏳ próxima |
 | 4. dev-workflow | — |
 | 5. Orquestração | — |
 | 6. Qualidade e lançamento | — |
@@ -160,6 +160,11 @@ Cada fase termina com:
   desliga a trava em silêncio. O lançador `run.sh` sonda e guarda o Python certo.
 - **Regras por projeto:** o `userConfig` fica no nível de usuário. Resolvido com `.claude/working-bee.json`
   (ADR 0003).
+- **Proposta para o core 0.2.0 (`ask_commands`):** pedir confirmação antes de comandos do projeto (deploy,
+  CLIs de produção) via `.claude/working-bee.json`. Hoje isso se faz com `permissions.ask` nas settings. Veio da
+  auditoria do insulin-log.
+- **Hook Stop que sugere `/learn`:** não feito (YAGNI). A skill já dispara sozinha pela `description` quando há
+  uma correção.
 - **Auditoria (PostToolUse) adiada:** um log de comandos pode guardar segredos digitados no comando. Reavaliar
   junto com o plugin `privacy` (Fase 3).
 - **Nomes temáticos de abelha** para os plugins (por exemplo, `hive` para orquestração): a tendência é manter

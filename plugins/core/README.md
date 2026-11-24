@@ -2,6 +2,12 @@
 
 Guardrails and session context for Claude Code. Every other working-bee plugin depends on it.
 
+## Install
+
+```
+/plugin install core@working-bee
+```
+
 ## What it does
 
 | Hook | Event | Effect |
