@@ -35,6 +35,11 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
   in its own cache folder, so a dependency's `run.sh` is out of reach. Each plugin with hooks ships a copy of
   core's launcher; `tests/test_manifests.py` fails if a copy drifts.
 
+- **Plugin agents ignore `permissionMode`, `hooks`, `mcpServers` and `initialPrompt`** (docs, 2026-11-24), for
+  security. An agent that sets them only looks restricted. Limit it with `tools`. `tests/test_manifests.py` fails
+  if a plugin agent uses those fields.
+- **`isolation: worktree` branches from the default branch, not from the session's `HEAD`** (docs, 2026-11-24).
+  An isolated agent does not see the current branch's commits unless the prompt tells it to check them out.
 - **`hooks/hooks.json` must wrap the events in a top-level `"hooks"` key** (docs, 2026-11-24); an inline `hooks`
   object in `plugin.json` must not. `tests/test_manifests.py` checks the file.
 - **Plugin options (`userConfig`) are stored in the user's settings** (docs, 2026-11-24), so they cannot vary by
