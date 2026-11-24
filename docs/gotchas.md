@@ -64,6 +64,10 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
 
 - **A skill that interviews the user cannot do so in `claude -p`** (2026-11-24). For headless tests, put the answers
   in the prompt and say the user pre-approves the writes. That is what `/memory:agents-md init` was tested with.
+- **In `claude -p --permission-mode acceptEdits`, writes to `.claude/settings.json`, `.claude/working-bee.json` and
+  `.githooks/` were held for approval** (2026-11-24), with no working-bee guard loaded; other files were written.
+  Probably Claude Code's own protection of config and hook paths (a guess). Headless tests of `/bootstrap` check
+  the content the skill prints for those files instead.
 - **A checklist that names a mechanism will be applied too widely** (2026-11-24). The audit suggested `ask_paths`
   (file paths) to guard a deploy command. Say exactly what each guard covers in the reference files.
 

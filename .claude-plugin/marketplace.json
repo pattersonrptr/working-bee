@@ -26,6 +26,11 @@
       "name": "privacy",
       "source": "./plugins/privacy",
       "description": "Keeps sensitive terms (employer, clients, colleagues) out of files, commits, pushes and published text; the lists stay outside the repository."
+    },
+    {
+      "name": "bootstrap",
+      "source": "./plugins/bootstrap",
+      "description": "/bootstrap prepares a repository in one pass: marketplace and plugins in .claude/settings.json, safe permissions, AGENTS.md, gotchas, PR template, privacy pre-commit."
     }
   ]
 }
