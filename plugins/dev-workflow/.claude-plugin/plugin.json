@@ -1,7 +1,7 @@
 {
   "name": "dev-workflow",
   "version": "0.1.0",
-  "description": "A team for one: specialist reviewers run in parallel and an adversarial pass tries to refute every finding before you see it (/review).",
+  "description": "A team for one: /plan drafts tests-first slices that analysts stress before they become issues; /review runs specialist reviewers in parallel and an adversarial pass refutes what is not real.",
   "author": {
     "name": "Patterson Silva",
     "url": "https://github.com/pattersonrptr"

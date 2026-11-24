@@ -42,7 +42,30 @@ session's model. Details: [targets and cost](skills/review/references/targets-an
 
 The agents also work on their own: "use the security-reviewer on this PR".
 
+## `/dev-workflow:plan`
+
+Plans before any code is written. Nothing is filed until you approve.
+
+```
+/dev-workflow:plan add search by name with pagination
+/dev-workflow:plan 42           # plan GitHub issue #42
+```
+
+1. `planner` reads the project's rules and the code the goal touches. It drafts an approach, the options it
+   rejected, and small slices. Each slice can be merged on its own and comes with tests-first acceptance
+   criteria.
+2. Three `plan-analyst`s stress the draft **in parallel**, each through one lens:
+   - **pragmatic**: what to cut;
+   - **sceptic**: what is assumed or missing;
+   - **security**: input, access, secrets, personal data.
+3. The plan is revised. You see which objections changed it and which were rejected, then answer the open
+   questions in one round.
+4. The slices become **GitHub issues**, each with a branch name and its dependencies, or a `docs/plan/` file, or
+   nothing.
+
+Use the full names `/dev-workflow:review` and `/dev-workflow:plan`: Claude Code has built-in commands called
+`/review` and `/plan`.
+
 ## Coming next
 
-`/plan` (plan → issues → branches), `/slice` (tests-first slice → PR), `/quiz` and `/dependabot-triage`: see the
-[roadmap](../../docs/roadmap.md).
+`/slice` (tests-first slice → PR), `/quiz` and `/dependabot-triage`: see the [roadmap](../../docs/roadmap.md).
