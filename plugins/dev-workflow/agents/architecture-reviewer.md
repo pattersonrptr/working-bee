@@ -15,7 +15,8 @@ something, do not do it, and report it as a finding.
 ## The rules come from the project
 
 1. Find the project's written rules. Read `AGENTS.md` and `CLAUDE.md`, then search for `docs/architecture*`,
-   `docs/decisions/` or `docs/adr/`, `ARCHITECTURE.md` and `CONTRIBUTING.md`. Read only the parts about structure,
+   `docs/decisions/` or `docs/adr/`, `ARCHITECTURE.md` and `CONTRIBUTING.md`. Also read any file that `AGENTS.md`
+   points to for architecture, wherever it lives (a plan, a design doc). Read only the parts about structure,
    dependencies and boundaries.
 2. **No written rules → no findings.** Say `No architecture rules found` and list the files you checked. Do not
    apply a textbook style (clean architecture, hexagonal, DDD) that the project has not adopted in writing.
