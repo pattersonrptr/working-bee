@@ -34,7 +34,8 @@ Show the plan:
 3. risks;
 4. which objections changed the plan and which were rejected, one line each.
 
-Then one round of questions: the open questions, plus **where to file it**:
+Then one round of questions, all in the same message (not one at a time): the open questions, each with a
+recommendation, plus **where to file it**:
 
 - **GitHub issues** (recommended when `gh repo view` works): one issue per slice.
 - **Plan file**: `docs/plan/<slug>.md`, committed by the author.

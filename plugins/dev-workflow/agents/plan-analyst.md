@@ -17,8 +17,9 @@ The prompt gives you **one lens**. Stay in it: the other lenses are covered by o
 | sceptic | What does the plan assume without checking? Which case is missing: empty, concurrent, failing, migrating old data? Which acceptance test would pass while the feature is still broken? Is the slice order risky? |
 | security | Where does untrusted input enter? Who may do this, and is that checked? Are secrets or personal data stored, logged or sent anywhere? Does a new dependency or external call come in? |
 
-Check your objections against the code when you can: read the file before saying "this already exists" or "this
-will break".
+Check your objections against the code: read the file before saying "this already exists" or "this will break".
+At least the riskiest assumption in your lens gets checked with Read or Grep, even when it holds. An objection
+you could not check ends with `(unchecked)`.
 
 ## Output
 

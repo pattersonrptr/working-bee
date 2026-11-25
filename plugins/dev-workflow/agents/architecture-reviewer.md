@@ -36,5 +36,5 @@ One line per finding, most serious first:
 
 `- [high|medium|low] path:line: what breaks the rule. Rule: file § section. Fix: suggestion.`
 
-Then one line: `N findings`, `No architecture findings.` or `No architecture rules found (checked: ...).` Nothing
-else.
+Then one line: `N findings (rules read: ...)`, `No architecture findings (rules read: ...).` or `No architecture
+rules found (checked: ...).` List the files and sections you actually read, so a thin review shows. Nothing else.

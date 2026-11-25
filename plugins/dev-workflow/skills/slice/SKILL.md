@@ -22,7 +22,9 @@ one. Claude Code refuses writes inside `.git/`.
 ## 2. Tests first, then stop
 
 Write **only the tests**, one or more per acceptance criterion, in the project's style. Run them: they must fail
-because the code is missing, not because of a typo in the test. Then show the author:
+because the code is missing, not because of a typo in the test. A test that fails on an import of a name that
+does not exist yet hides the rest of its file: offer to add only the bare declaration (an empty class or a stub
+that raises), so the red becomes an assertion. Then show the author:
 
 | Criterion | Test | Fails today with |
 |---|---|---|
