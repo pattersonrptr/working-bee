@@ -1,0 +1,14 @@
+{
+  "name": "dev-workflow",
+  "version": "0.1.0",
+  "description": "A team for one: /plan drafts tests-first slices that analysts stress before they become issues; /slice takes one to a PR (approved tests, implementer, QA); /review runs specialist reviewers in parallel with an adversarial pass.",
+  "author": {
+    "name": "Patterson Silva",
+    "url": "https://github.com/pattersonrptr"
+  },
+  "homepage": "https://github.com/pattersonrptr/working-bee",
+  "repository": "https://github.com/pattersonrptr/working-bee",
+  "license": "MIT",
+  "keywords": ["subagents", "code-review", "adversarial-review", "workflow"],
+  "dependencies": ["core"]
+}

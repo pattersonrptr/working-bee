@@ -64,6 +64,53 @@ def test_skills_have_frontmatter(entry):
         assert re.search(r"^description: .*Use when", front, re.M), f"{skill}: description needs 'Use when'"
 
 
+AGENT_MODELS = {"sonnet", "opus", "haiku", "fable", "inherit"}
+# Claude Code ignores these in plugin agents (security): a plugin that sets them only looks protected.
+IGNORED_IN_PLUGIN_AGENTS = ("hooks", "mcpServers", "permissionMode", "initialPrompt")
+WRITE_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+
+
+def agent_files() -> list[Path]:
+    return sorted(path for entry in ENTRIES for path in (ROOT / entry["source"] / "agents").glob("*.md"))
+
+
+def frontmatter(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8")
+    assert text.startswith("---\n"), path
+    fields = {}
+    for line in text.split("---\n", 2)[1].splitlines():
+        key, sep, value = line.partition(":")
+        if sep and not key.startswith(" "):
+            fields[key.strip()] = value.strip()
+    return fields
+
+
+@pytest.mark.parametrize("path", agent_files(), ids=lambda p: p.stem)
+def test_agents_have_valid_frontmatter(path: Path):
+    fields = frontmatter(path)
+    assert fields.get("name") == path.stem
+    assert "Use when" in fields.get("description", ""), f"{path.name}: description needs 'Use when'"
+    assert fields.get("model") in AGENT_MODELS
+    for key in IGNORED_IN_PLUGIN_AGENTS:
+        assert key not in fields, f"{path.name}: '{key}' is ignored in plugin agents"
+
+
+@pytest.mark.parametrize(
+    "path", [p for p in agent_files() if p.stem.endswith("-reviewer")], ids=lambda p: p.stem
+)
+def test_reviewers_cannot_edit(path: Path):
+    tools = {tool.strip() for tool in frontmatter(path)["tools"].split(",")}
+    assert tools and not tools & WRITE_TOOLS, f"{path.name}: a reviewer must not have {tools & WRITE_TOOLS}"
+
+
+@pytest.mark.parametrize("entry", ENTRIES, ids=lambda e: e["name"])
+def test_skills_name_agents_that_exist(entry):
+    plugin = ROOT / entry["source"]
+    for skill in plugin.glob("skills/*/SKILL.md"):
+        for agent in re.findall(rf"`{entry['name']}:([a-z0-9-]+)`", skill.read_text(encoding="utf-8")):
+            assert (plugin / "agents" / f"{agent}.md").is_file(), f"{skill} names a missing agent: {agent}"
+
+
 def test_every_launcher_is_a_copy_of_cores():
     # a plugin cannot reach another plugin's files once installed, so each one ships its own run.sh
     core = (ROOT / "plugins" / "core" / "hooks" / "run.sh").read_bytes()

@@ -35,6 +35,11 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
   in its own cache folder, so a dependency's `run.sh` is out of reach. Each plugin with hooks ships a copy of
   core's launcher; `tests/test_manifests.py` fails if a copy drifts.
 
+- **Plugin agents ignore `permissionMode`, `hooks`, `mcpServers` and `initialPrompt`** (docs, 2026-11-24), for
+  security. An agent that sets them only looks restricted. Limit it with `tools`. `tests/test_manifests.py` fails
+  if a plugin agent uses those fields.
+- **`isolation: worktree` branches from the default branch, not from the session's `HEAD`** (docs, 2026-11-24).
+  An isolated agent does not see the current branch's commits unless the prompt tells it to check them out.
 - **`hooks/hooks.json` must wrap the events in a top-level `"hooks"` key** (docs, 2026-11-24); an inline `hooks`
   object in `plugin.json` must not. `tests/test_manifests.py` checks the file.
 - **Plugin options (`userConfig`) are stored in the user's settings** (docs, 2026-11-24), so they cannot vary by
@@ -71,6 +76,9 @@ Surprises that cost time. Each one: what happens, why, what to do. The date says
 - **The transcript view (Ctrl+O) hides a skill's question** (2026-11-24). During `/bootstrap` the session looked
   stuck after the first step; the AskUserQuestion dialog was under the detailed transcript. Press Ctrl+O again to
   see it. Worth a line in any skill README that asks questions.
+- **Claude Code treats `.git/` as a sensitive path** (2026-11-24). In a headless `/slice` run, writing evidence
+  to `.git/slice/` was refused. `/slice` now keeps red and green in commit messages instead. Interactive
+  sessions ask first, which is why `/bootstrap` asks before it creates `.git/info/sensitive-terms`.
 - **A checklist that names a mechanism will be applied too widely** (2026-11-24). The audit suggested `ask_paths`
   (file paths) to guard a deploy command. Say exactly what each guard covers in the reference files.
 
