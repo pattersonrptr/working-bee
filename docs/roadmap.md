@@ -3,7 +3,7 @@
 > **working bee** (Australian and British English) is a mutirão: people who get together to do, for free, a job
 > nobody would finish alone. Here the neighbours are agents, and the barn is your project.
 
-Living document. Status on 2026-11-24: **phases 0 to 3 done**; phase 4 in progress. The repository is public.
+Living document. Status on 2026-11-24: **phases 0 to 4 done**; phase 5 next. The repository is public.
 
 ## 1. Goals
 
@@ -84,7 +84,7 @@ working-bee/
 | **core** ✅ | Hooks: dangerous commands, secret files, protected branches, frozen paths, "ask" for the guardrails' own config; session brief; git facts before compaction. Skill `/core:audit-settings` | protected branches; per project in `.claude/working-bee.json` | the author's own project hooks, generalized |
 | **memory** ✅ | Skills `/memory:learn` (mistake → one-line rule in AGENTS.md), `/memory:gotcha`, `/memory:agents-md init\|audit\|update` | target file, gotchas file | the learn-from-mistakes idea |
 | **bootstrap** ✅ | Skill `/bootstrap`: asks the stack and hats, writes AGENTS.md, CLAUDE.md, `.claude/settings.json` (marketplace + plugins + base permissions), `docs/gotchas.md`, PR template, privacy pre-commit (copy of `tools/privacy_check.py`) | none (YAGNI) | |
-| **dev-workflow** ⏳ | Agents: `planner`, `plan-analyst` (pragmatic, sceptic, security lenses), `implementer`, `qa`, `correctness-reviewer`, `security-reviewer`, `architecture-reviewer` (the project's written rules only), `adversarial-reviewer`. Skills: `/plan` (plan → GitHub Issues), `/slice` (tests-first slice → PR), `/review` (parallel reviewers + adversarial pass), `/quiz`, `/dependabot-triage`; `/deliver` in phase 5 | none yet; models fixed per role ([ADR 0006](decisions/0006-review-by-a-team.md)) | the author's project skills and agent, generalized |
+| **dev-workflow** ✅ | Agents: `planner`, `plan-analyst` (pragmatic, sceptic, security lenses), `implementer`, `qa`, `correctness-reviewer`, `security-reviewer`, `architecture-reviewer` (the project's written rules only), `adversarial-reviewer`. Skills: `/plan` (plan → GitHub Issues), `/slice` (tests-first slice → PR), `/review` (parallel reviewers + adversarial pass), `/quiz`, `/dependabot-triage`; `/deliver` in phase 5 | none yet; models fixed per role ([ADR 0006](decisions/0006-review-by-a-team.md)) | the author's project skills and agent, generalized |
 | **python-backend** ✅ | Post-edit hook: `ruff check --fix` + `ruff format`. Test skill (detects poetry/uv/pytest) | runner (auto, venv, uv, poetry, path) | the author's project hook |
 | **privacy** ✅ | Hook that asks before sensitive terms (lists outside the repo, [ADR 0004](decisions/0004-privacy-term-lists.md)) or personal data found by detectors ([ADR 0005](decisions/0005-privacy-asks-and-detects.md)) leave through writes, commits, pushes and `gh`/`curl` text; per-project approvals; `/privacy:terms` adds and suggests terms. The pre-commit comes from `/bootstrap` | personal terms file, detectors on/off | the author's privacy pre-commit hooks |
 | **scraping** (phase 7) | Guardrails and skill for ethical collection: robots.txt, human pace, daily limits, personal data | limits | |
@@ -118,7 +118,7 @@ Each phase ends with: behavior validated locally by the author; entries in `docs
 | 1. core | ✅ 2026-11-24, validated by the author in Garimpei |
 | 2. memory | ✅ 2026-11-24: a private project got its AGENTS.md from `/memory:agents-md init`; a real mistake became a rule with `/memory:learn`; history audit clean |
 | 3. bootstrap + hats | ✅ 2026-11-24, validated by the author: `privacy` in two private projects (0.1.0, then 0.2.0 asks instead of blocking); `/bootstrap` on an empty repository and on one with `CLAUDE.md` but no `AGENTS.md` (rules migrated, none lost). Merged in PR #2 |
-| 4. dev-workflow | ⏳ built and tested headless: `/review`, `/plan`, `/slice`, `/quiz`, `/dependabot-triage` (8 agents); waiting for the real test: a Garimpei feature from issue to PR through the flow |
+| 4. dev-workflow | ✅ 2026-11-24, validated in Garimpei: a real bug went `/dev-workflow:plan` (3 issues; the analysts changed the approach) → `/dev-workflow:slice` (tests approved, implementer, QA, review, Postgres check) → PR, green CI, merged by the author. The project's own architecture reviewer still caught a point the plugin's missed; lessons went back into the agents. `/quiz` and `/dependabot-triage` were tested headless only |
 | 5. Orchestration | — |
 | 6. Quality and launch | — |
 | 7. Optional | — |
